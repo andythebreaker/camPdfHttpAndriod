@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">basic_http_sv</string>
+    <string name="capture">capture</string>
+    <string name="preview_area">preview_area</string>
 </resources>
