@@ -1,32 +1,61 @@
 package me.andythebreaker.basic_http_sv;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.Camera;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.Preview;
+import androidx.camera.extensions.HdrImageCaptureExtender;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LifecycleOwner;
 import WebServer.MyWebServer;
-
 import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.io.File;
+
 
 public class MainActivity extends AppCompatActivity {
 
     private String hostip; //本機IP
     private MyWebServer mywebserver;
+    private int REQUEST_CODE_PERMISSIONS = 1001;
+    private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA", "android.permission.WRITE_EXTERNAL_STORAGE"};
+    PreviewView mPreviewView;
+    ImageView captureImage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         //hostip = getLocalIpAddress();
-        String tmp="";
+        String tmp = "";
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface
                     .getNetworkInterfaces(); en.hasMoreElements(); ) {
@@ -34,17 +63,17 @@ public class MainActivity extends AppCompatActivity {
                 for (Enumeration<InetAddress> enumIpAddr = intf
                         .getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
                     InetAddress inetAddress = enumIpAddr.nextElement();
-                    tmp+=inetAddress.getHostAddress().toString()+"->"+
-                            (inetAddress.isAnyLocalAddress()?"isAnyLocalAddress, ":"-")+
-                            (  inetAddress.isLinkLocalAddress()?"isLinkLocalAddress, ":"-")+
-                            (  inetAddress.isLoopbackAddress()?"isLoopbackAddress, ":"-")+
-                            (  inetAddress.isMCGlobal()?"isMCGlobal, ":"-")+
-                            (  inetAddress.isMCLinkLocal()?"isMCLinkLocal, ":"-")+
-                            (  inetAddress.isMCNodeLocal()?"isMCNodeLocal, ":"-")+
-                            (  inetAddress.isMCOrgLocal()?"isMCOrgLocal, ":"-")+
-                            ( inetAddress.isMCSiteLocal()?"isMCSiteLocal, ":"-")+
-                            (  inetAddress.isMulticastAddress()?"isMulticastAddress, ":"-")+
-                            (  inetAddress.isSiteLocalAddress()?"isSiteLocalAddress, ":"-")+"#";
+                    tmp += inetAddress.getHostAddress().toString() + "->" +
+                            (inetAddress.isAnyLocalAddress() ? "isAnyLocalAddress, " : "-") +
+                            (inetAddress.isLinkLocalAddress() ? "isLinkLocalAddress, " : "-") +
+                            (inetAddress.isLoopbackAddress() ? "isLoopbackAddress, " : "-") +
+                            (inetAddress.isMCGlobal() ? "isMCGlobal, " : "-") +
+                            (inetAddress.isMCLinkLocal() ? "isMCLinkLocal, " : "-") +
+                            (inetAddress.isMCNodeLocal() ? "isMCNodeLocal, " : "-") +
+                            (inetAddress.isMCOrgLocal() ? "isMCOrgLocal, " : "-") +
+                            (inetAddress.isMCSiteLocal() ? "isMCSiteLocal, " : "-") +
+                            (inetAddress.isMulticastAddress() ? "isMulticastAddress, " : "-") +
+                            (inetAddress.isSiteLocalAddress() ? "isSiteLocalAddress, " : "-") + "#";
                 }
             }
         } catch (SocketException ex) {
@@ -52,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        TextView tt = (TextView)findViewById(R.id.t1);
+        TextView tt = (TextView) findViewById(R.id.t1);
         tt.setText(tmp);
         try {
             mywebserver = new MyWebServer(this);
@@ -60,11 +89,35 @@ public class MainActivity extends AppCompatActivity {
             toast.show();
         } catch (IOException e) {
             e.printStackTrace();
-            Toast toast = Toast.makeText(this, "onResume->WebServer start failed..."+ e.getMessage(), Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(this, "onResume->WebServer start failed..." + e.getMessage(), Toast.LENGTH_SHORT);
             toast.show();
         }
+        TextView t2 = (TextView) findViewById(R.id.t2);
+        t2.setText("123");
     }
 
+    private boolean allPermissionsGranted(){
+
+        for(String permission : REQUIRED_PERMISSIONS){
+            if(ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (allPermissionsGranted()) {
+                startCamera();
+            } else {
+                Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
+                this.finish();
+            }
+        }
+    }
 
     @Override
     public void onResume() {
@@ -117,7 +170,8 @@ public class MainActivity extends AppCompatActivity {
     public void buttonOnClick(View v) {
         //Button button = (Button) v;
         Toast toast = Toast.makeText(this, "按鈕已經被點擊", Toast.LENGTH_SHORT);
-        toast.show();if (mywebserver != null) {
+        toast.show();
+        if (mywebserver != null) {
             mywebserver.closeAllConnections();
             mywebserver = null;
             Toast toast2 = Toast.makeText(this, "onPause->app pause, so web server close...", Toast.LENGTH_SHORT);
@@ -125,8 +179,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void checkIpClick(View v){
-        String tmp="";
+    public void checkIpClick(View v) {
+        String tmp = "";
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface
                     .getNetworkInterfaces(); en.hasMoreElements(); ) {
@@ -134,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
                 for (Enumeration<InetAddress> enumIpAddr = intf
                         .getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
                     InetAddress inetAddress = enumIpAddr.nextElement();
-                    tmp+= inetAddress.getHostAddress().toString()+";";
+                    tmp += inetAddress.getHostAddress().toString() + ";";
                 }
             }
         } catch (SocketException ex) {
@@ -144,4 +198,95 @@ public class MainActivity extends AppCompatActivity {
         toast.show();
     }
 
+    private Executor executor = Executors.newSingleThreadExecutor();
+
+    private void startCamera() {
+
+        final ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+
+        cameraProviderFuture.addListener(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+                    bindPreview(cameraProvider);
+
+                } catch (ExecutionException | InterruptedException e) {
+                    // No errors need to be handled for this Future.
+                    // This should never be reached.
+                }
+            }
+        }, ContextCompat.getMainExecutor(this));
+    }
+    public String getBatchDirectoryName() {
+
+        String app_folder_path = "";
+        app_folder_path = Environment.getExternalStorageDirectory().toString() + "/images";
+        File dir = new File(app_folder_path);
+        if (!dir.exists() && !dir.mkdirs()) {
+
+        }
+
+        return app_folder_path;
+    }
+    void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
+
+        Preview preview = new Preview.Builder()
+                .build();
+
+        CameraSelector cameraSelector = new CameraSelector.Builder()
+                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                .build();
+
+        ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
+                .build();
+
+        ImageCapture.Builder builder = new ImageCapture.Builder();
+
+        //Vendor-Extensions (The CameraX extensions dependency in build.gradle)
+        HdrImageCaptureExtender hdrImageCaptureExtender = HdrImageCaptureExtender.create(builder);
+
+        // Query if extension is available (optional).
+        if (hdrImageCaptureExtender.isExtensionAvailable(cameraSelector)) {
+            // Enable the extension if available.
+            hdrImageCaptureExtender.enableExtension(cameraSelector);
+        }
+
+        final ImageCapture imageCapture = builder
+                .setTargetRotation(this.getWindowManager().getDefaultDisplay().getRotation())
+                .build();
+        preview.setSurfaceProvider(mPreviewView.createSurfaceProvider());
+        Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview, imageAnalysis, imageCapture);
+
+
+        captureImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
+                File file = new File(getBatchDirectoryName(), mDateFormat.format(new Date()) + ".jpg");
+
+                ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(file).build();
+                imageCapture.takePicture(outputFileOptions, executor, new ImageCapture.OnImageSavedCallback() {
+                    @Override
+                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                        new Handler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(MainActivity.this, "Image Saved successfully", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(@NonNull ImageCaptureException error) {
+                        error.printStackTrace();
+                    }
+                });
+            }
+        });
+    }
+
 }
+
