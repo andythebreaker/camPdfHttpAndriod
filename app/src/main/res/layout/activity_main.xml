@@ -42,7 +42,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/camera">
+        app:layout_constraintTop_toBottomOf="@+id/camera_previewView">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/capture"
@@ -55,7 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:contentDescription="@string/capture"
-                android:src="@mipmap/ic_launcher" />
+                android:src="@mipmap/ic_camera_black_36dp" />
 
         </androidx.cardview.widget.CardView>
 
