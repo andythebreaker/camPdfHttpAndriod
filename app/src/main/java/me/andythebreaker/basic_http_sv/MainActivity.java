@@ -255,26 +255,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void checkIpClick(View v) {
-        String tmp = "";
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface
-                    .getNetworkInterfaces(); en.hasMoreElements(); ) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf
-                        .getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    tmp += inetAddress.getHostAddress().toString() + ";";
-                }
-            }
-        } catch (SocketException ex) {
-            Log.e("WifiPreference IpAddress", ex.toString());
-        }
-        Toast toast = Toast.makeText(this, tmp, Toast.LENGTH_SHORT);
-        toast.show();
-    }
-
-
     ///////////////////////////////////////////////////////////////////////////////////
     private void startCamera() {
 
