@@ -6,6 +6,8 @@ import WebServer.MyWebServer;
 
 import android.annotation.SuppressLint;
 import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraMetadata;
+import android.hardware.camera2.CaptureRequest;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
@@ -26,8 +28,10 @@ import java.util.Enumeration;
 
 import androidx.annotation.NonNull;
 import androidx.camera.camera2.interop.Camera2CameraInfo;
+import androidx.camera.camera2.interop.Camera2Interop;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ExtendableBuilder;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
@@ -301,9 +305,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
-
-        Preview preview = new Preview.Builder()
-                .build();
+        float focusDistance = 0F; // example: infinite focus
+        Preview.Builder previewBuilder_wf = new Preview.Builder();
+        setFocusDistance(previewBuilder_wf, focusDistance);
+        Preview preview = previewBuilder_wf.build();
+        /*Preview preview = new Preview.Builder()
+                .build();*/
 
         CameraSelector cameraSelector = new CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
@@ -438,6 +445,12 @@ public class MainActivity extends AppCompatActivity {
         public int getItemCount() {
             return arrayList.size();
         }
+    }
+
+    void setFocusDistance(ExtendableBuilder<?> builder, float distance) {
+        Camera2Interop.Extender extender = new Camera2Interop.Extender(builder);
+        extender.setCaptureRequestOption(CaptureRequest.CONTROL_AF_MODE, CameraMetadata.CONTROL_AF_MODE_OFF);
+        extender.setCaptureRequestOption(CaptureRequest.LENS_FOCUS_DISTANCE, distance);
     }
 
 }
