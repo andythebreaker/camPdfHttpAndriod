@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import WebServer.MyWebServer;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
@@ -403,17 +405,17 @@ public class MainActivity extends AppCompatActivity {
             SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
             File file = new File(getBatchDirectoryName(), mDateFormat.format(new Date()) + ".jpg");
 
-            HashMap<String, String> bookhashMap3 = new HashMap<>();
-            bookhashMap3.put("Id", file.toString());
-            bookarrayList.add(bookhashMap3);
-            obj_BookListAdapter.notifyItemInserted(obj_BookListAdapter.getItemCount() - 1);
-
             ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(file).build();
             imageCapture.takePicture(outputFileOptions, executor, new ImageCapture.OnImageSavedCallback() {
                 @Override
                 public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                     new Handler(Looper.getMainLooper()).post(() -> {
                         Toast.makeText(MainActivity.this, "Image Saved successfully", Toast.LENGTH_SHORT).show();
+
+                        HashMap<String, String> bookhashMap3 = new HashMap<>();
+                        bookhashMap3.put("Id", file.toString());
+                        bookarrayList.add(bookhashMap3);
+                        obj_BookListAdapter.notifyItemInserted(obj_BookListAdapter.getItemCount() - 1);
                     });
                 }
 
@@ -575,6 +577,7 @@ public class MainActivity extends AppCompatActivity {
 
         class ViewHolder extends RecyclerView.ViewHolder {
             private TextView tvId, tvSub1, tvSub2, tvAvg;
+            private ImageView iv_book_page_imageView;
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
@@ -582,6 +585,7 @@ public class MainActivity extends AppCompatActivity {
                 //tvSub1 = itemView.findViewById(R.id.textView_sub1);
                 //tvSub2 = itemView.findViewById(R.id.textView_sub2);
                 //tvAvg = itemView.findViewById(R.id.textView_avg);
+                iv_book_page_imageView=itemView.findViewById(R.id.book_page_imageView);
             }
         }
 
@@ -608,6 +612,14 @@ public class MainActivity extends AppCompatActivity {
             //holder.tvSub1.setText(arrayList.get(position).get("Sub1"));
             //holder.tvSub2.setText(arrayList.get(position).get("Sub2"));
             //holder.tvAvg.setText(arrayList.get(position).get("Avg"));
+            File imgFile = new  File(bookarrayList.get(position).get("Id"));
+
+            if(imgFile.exists()){
+                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                holder.iv_book_page_imageView.setImageBitmap(myBitmap);
+            }else{
+                toast_is_good_to_eat("there is a major error, can't show your photo!!");
+            }
         }
 
         @Override
