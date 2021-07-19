@@ -217,14 +217,18 @@ public class MainActivity extends AppCompatActivity {
         myListAdapter = new MyListAdapter();
         mRecyclerView.setAdapter(myListAdapter);
         ///////////////////
-        HashMap<String, String> bookhashMap = new HashMap<>();
-        bookhashMap.put("Id", "filename1");
-        bookarrayList.add(bookhashMap);
+        //HashMap<String, String> bookhashMap = new HashMap<>();
+        //bookhashMap.put("Id", "filename1");
+        //bookarrayList.add(bookhashMap);
         bookrv = findViewById(R.id.bookl);
         bookrv.setLayoutManager(new LinearLayoutManager(this));
         bookrv.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));
         obj_BookListAdapter = new BookListAdapter();
         bookrv.setAdapter(obj_BookListAdapter);
+        //HashMap<String, String> bookhashMap2 = new HashMap<>();
+        //bookhashMap2.put("Id", "filename2");
+        //bookarrayList.add(bookhashMap2);
+        //obj_BookListAdapter.notifyItemInserted(obj_BookListAdapter.getItemCount() - 1);
 
         switch_if_af = (Switch) findViewById(R.id.switch1);
     }
@@ -398,6 +402,11 @@ public class MainActivity extends AppCompatActivity {
 
             SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
             File file = new File(getBatchDirectoryName(), mDateFormat.format(new Date()) + ".jpg");
+
+            HashMap<String, String> bookhashMap3 = new HashMap<>();
+            bookhashMap3.put("Id", file.toString());
+            bookarrayList.add(bookhashMap3);
+            obj_BookListAdapter.notifyItemInserted(obj_BookListAdapter.getItemCount() - 1);
 
             ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(file).build();
             imageCapture.takePicture(outputFileOptions, executor, new ImageCapture.OnImageSavedCallback() {
