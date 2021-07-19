@@ -7,4 +7,7 @@
     <color name="green_TOKIWA">#DDB98B</color>
     <color name="blue_RURI">#DDB98B</color>
     <color name="yellow_YAMABUKI">#DDB98B</color>
+    <color name="red_ip">#D94C1A</color>
+    <color name="blank_ip">#A4A68A</color>
+    <color name="other_ip">#F2BE24</color>
 </resources>

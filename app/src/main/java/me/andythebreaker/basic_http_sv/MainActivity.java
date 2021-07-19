@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA", "android.permission.WRITE_EXTERNAL_STORAGE"};
     PreviewView mPreviewView;
     ImageView captureImage;
-    TextView tt;
+    //TextView tt;
     TextView t3;
     SeekBar sk;
     TextView aaaaaaaaaaaaaaaa;
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //getActionBar().hide();
         //hostip = getLocalIpAddress();
-        String tmp = "";
+        //String tmp = "";
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface
                     .getNetworkInterfaces(); en.hasMoreElements(); ) {
@@ -98,25 +98,37 @@ public class MainActivity extends AppCompatActivity {
                 for (Enumeration<InetAddress> enumIpAddr = intf
                         .getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
                     InetAddress inetAddress = enumIpAddr.nextElement();
-                    tmp += inetAddress.getHostAddress().toString() + "->" +
-                            (inetAddress.isAnyLocalAddress() ? "isAnyLocalAddress, " : "-") +
-                            (inetAddress.isLinkLocalAddress() ? "isLinkLocalAddress, " : "-") +
-                            (inetAddress.isLoopbackAddress() ? "isLoopbackAddress, " : "-") +
-                            (inetAddress.isMCGlobal() ? "isMCGlobal, " : "-") +
-                            (inetAddress.isMCLinkLocal() ? "isMCLinkLocal, " : "-") +
-                            (inetAddress.isMCNodeLocal() ? "isMCNodeLocal, " : "-") +
-                            (inetAddress.isMCOrgLocal() ? "isMCOrgLocal, " : "-") +
-                            (inetAddress.isMCSiteLocal() ? "isMCSiteLocal, " : "-") +
-                            (inetAddress.isMulticastAddress() ? "isMulticastAddress, " : "-") +
-                            (inetAddress.isSiteLocalAddress() ? "isSiteLocalAddress, " : "-") + "#";
+
+                    HashMap<String,String> hashMap = new HashMap<>();
+                    hashMap.put("Id",inetAddress.getHostAddress());
+                    //hashMap.put("Sub1",String.valueOf(new Random().nextInt(80) + 20));
+                    //hashMap.put("Sub2",String.valueOf(new Random().nextInt(80) + 20));
+
+                    String tmp_ip_stat=(inetAddress.isAnyLocalAddress() ? "isAnyLocalAddress, " : "-, ") +
+                            (inetAddress.isLinkLocalAddress() ? "isLinkLocalAddress, " : "-, ") +
+                            (inetAddress.isLoopbackAddress() ? "isLoopbackAddress, " : "-, ") +
+                            (inetAddress.isMCGlobal() ? "isMCGlobal, " : "-, ") +
+                            (inetAddress.isMCLinkLocal() ? "isMCLinkLocal, " : "-, ") +
+                            (inetAddress.isMCNodeLocal() ? "isMCNodeLocal, " : "-, ") +
+                            (inetAddress.isMCOrgLocal() ? "isMCOrgLocal, " : "-, ") +
+                            (inetAddress.isMCSiteLocal() ? "isMCSiteLocal, " : "-, ") +
+                            (inetAddress.isMulticastAddress() ? "isMulticastAddress, " : "-, ") +
+                            (inetAddress.isSiteLocalAddress() ? "isSiteLocalAddress, " : "-, ");
+
+                    hashMap.put("Avg",tmp_ip_stat);
+
+                    arrayList.add(hashMap);
+
+                    //tmp += inetAddress.getHostAddress().toString() + "->" +tmp_ip_stat + "#";
                 }
             }
         } catch (SocketException ex) {
             Log.e("WifiPreference IpAddress", ex.toString());
         }
 
-        tt = (TextView) findViewById(R.id.t1);
-        tt.setText(tmp);
+        //tt = (TextView) findViewById(R.id.t1);
+        //tt.setText(tmp);
+
         t3 = (TextView) findViewById(R.id.t3);
         t3.setText("..........");
         sk = (SeekBar) findViewById(R.id.seekBar2);
@@ -163,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         //製造資料
-        for (int i = 0;i<30;i++){
+        /*for (int i = 0;i<30;i++){
             HashMap<String,String> hashMap = new HashMap<>();
             hashMap.put("Id","座號："+String.format("%02d",i+1));
             hashMap.put("Sub1",String.valueOf(new Random().nextInt(80) + 20));
@@ -173,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                             +Integer.parseInt(hashMap.get("Sub2")))/2));
 
             arrayList.add(hashMap);
-        }
+        }*/
         //設置RecycleView
         mRecyclerView = findViewById(R.id.lllll);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -375,8 +387,8 @@ public class MainActivity extends AppCompatActivity {
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 tvId = itemView.findViewById(R.id.textView_Id);
-                tvSub1 = itemView.findViewById(R.id.textView_sub1);
-                tvSub2 = itemView.findViewById(R.id.textView_sub2);
+                //tvSub1 = itemView.findViewById(R.id.textView_sub1);
+                //tvSub2 = itemView.findViewById(R.id.textView_sub2);
                 tvAvg  = itemView.findViewById(R.id.textView_avg);
             }
         }
@@ -390,7 +402,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            int avgS = Integer.parseInt(arrayList.get(position).get("Avg"));
+            /*int avgS = Integer.parseInt(arrayList.get(position).get("Avg"));
             if (avgS>=80){
                 holder.tvId.setBackgroundColor(getColor(R.color.green_TOKIWA));
             }else if (avgS<80 &&avgS>=60){
@@ -399,10 +411,19 @@ public class MainActivity extends AppCompatActivity {
                 holder.tvId.setBackgroundColor(getColor(R.color.yellow_YAMABUKI));
             }else {
                 holder.tvId.setBackgroundColor(getColor(R.color.red_GINSYU));
+            }*/
+                    String avgS =arrayList.get(position).get("Avg");
+            if(avgS.contains("isSiteLocalAddress, ")){
+                holder.tvId.setBackgroundColor(getColor(R.color.red_ip));
+            }else if(avgS.contains("-, -, -, -, -, -, -, -, -, -, ")){
+                holder.tvId.setBackgroundColor(getColor(R.color.blank_ip));
+            }else{
+                holder.tvId.setBackgroundColor(getColor(R.color.other_ip));
             }
+
             holder.tvId.setText(arrayList.get(position).get("Id"));
-            holder.tvSub1.setText(arrayList.get(position).get("Sub1"));
-            holder.tvSub2.setText(arrayList.get(position).get("Sub2"));
+            //holder.tvSub1.setText(arrayList.get(position).get("Sub1"));
+            //holder.tvSub2.setText(arrayList.get(position).get("Sub2"));
             holder.tvAvg.setText(arrayList.get(position).get("Avg"));
         }
 

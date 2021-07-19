@@ -19,7 +19,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="?attr/colorBackgroundFloating" />
 
-    <LinearLayout
+    <!--LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="20dp"
@@ -73,7 +73,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="#000"
             android:textSize="18sp" />
-    </LinearLayout>
+    </LinearLayout-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -83,7 +83,7 @@
         android:layout_marginBottom="10dp"
         android:orientation="horizontal">
 
-        <TextView
+        <!--TextView
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
             android:text="平均分："
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="#000"
-            android:textSize="18sp" />
+            android:textSize="18sp" /-->
 
         <TextView
             android:id="@+id/textView_avg"
