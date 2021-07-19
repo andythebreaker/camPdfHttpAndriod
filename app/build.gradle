@@ -38,4 +38,7 @@ dependencies {
     implementation "androidx.camera:camera-view:1.0.0-alpha26"
     implementation "androidx.camera:camera-core:1.1.0-alpha06"
     implementation "androidx.camera:camera-extensions:1.0.0-alpha26"
+    // a dependency on Jackson Databind
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.8.9'
+
 }

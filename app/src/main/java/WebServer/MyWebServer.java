@@ -4,6 +4,8 @@ import BookPage.Bookpage;
 
 import android.content.Context;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,6 +45,13 @@ public class MyWebServer extends NanoHTTPD {
         //vendorsMainChunkTooLarge
         if (uri.equals("/book_list")){
             return newFixedLengthResponse(Response.Status.OK, "text/html", Bookpage.book_page_aryList_2str());
+        }
+        if (uri.equals("/book_list_file_name")){
+            try {
+                return newFixedLengthResponse(Response.Status.OK, "application/json", Bookpage.book_page_file_name_list());
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
         }
 
         String mimetype = "text/html";
