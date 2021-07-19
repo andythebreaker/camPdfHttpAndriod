@@ -70,10 +70,21 @@
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="133dp"
-        android:layout_marginTop="57dp"
+        android:layout_marginStart="210dp"
+        android:layout_marginTop="10dp"
         android:onClick="buttonOnClick"
-        android:text="Button"
+        android:text="close sv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/bton_sv_hand_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="210dp"
+        android:layout_marginTop="50dp"
+        android:onClick="bton_sv_hand_startOnClick"
+        android:text="hand start sv"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

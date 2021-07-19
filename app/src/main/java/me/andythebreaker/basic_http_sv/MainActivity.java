@@ -268,6 +268,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void bton_sv_hand_startOnClick(View v){
+        Toast toast2 = Toast.makeText(this, "hand start sv", Toast.LENGTH_SHORT);
+        toast2.show();
+        try {
+            mywebserver = new MyWebServer(this);
+            Toast toast = Toast.makeText(this, "onResume->WebServer started", Toast.LENGTH_SHORT);
+            toast.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast toast = Toast.makeText(this, "onResume->WebServer start failed..."+ e.getMessage(), Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////
     private void startCamera() {
 
