@@ -11,7 +11,7 @@ import fi.iki.elonen.NanoHTTPD;
 
 public class MyWebServer extends NanoHTTPD {
 
-    private final static int PORT = 33445;
+    public final static int PORT = 33445;
     private Context _mainContext;
 
     /*

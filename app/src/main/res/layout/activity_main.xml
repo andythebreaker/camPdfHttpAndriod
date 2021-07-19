@@ -17,7 +17,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
     </androidx.camera.view.PreviewView>
 
     <LinearLayout
@@ -77,12 +76,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <EditText
+        android:id="@+id/editTextNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number"
+        android:layout_marginStart="210dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <Button
         android:id="@+id/bton_sv_hand_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="210dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="85dp"
         android:onClick="bton_sv_hand_startOnClick"
         android:text="hand start sv"
         app:layout_constraintStart_toStartOf="parent"
