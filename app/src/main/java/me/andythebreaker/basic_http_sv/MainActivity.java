@@ -94,9 +94,14 @@ public class MainActivity extends AppCompatActivity {
     TextView t3;
     SeekBar sk;
     TextView aaaaaaaaaaaaaaaa;
+    /////////////RecyclerView
     RecyclerView mRecyclerView;
     MyListAdapter myListAdapter;
     ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
+    //////////////////////
+    RecyclerView bookrv;
+    BookListAdapter obj_BookListAdapter;
+    ArrayList<HashMap<String, String>> bookarrayList = new ArrayList<>();
     Preview.Builder previewBuilder_wf = new Preview.Builder();
     Switch switch_if_af;
     int define_if_able_auto_focus = 1;
@@ -211,6 +216,15 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         myListAdapter = new MyListAdapter();
         mRecyclerView.setAdapter(myListAdapter);
+        ///////////////////
+        HashMap<String, String> bookhashMap = new HashMap<>();
+        bookhashMap.put("Id", "filename1");
+        bookarrayList.add(bookhashMap);
+        bookrv = findViewById(R.id.bookl);
+        bookrv.setLayoutManager(new LinearLayoutManager(this));
+        bookrv.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));
+        obj_BookListAdapter = new BookListAdapter();
+        bookrv.setAdapter(obj_BookListAdapter);
 
         switch_if_af = (Switch) findViewById(R.id.switch1);
     }
@@ -545,5 +559,50 @@ public class MainActivity extends AppCompatActivity {
         toast3.show();
     }
 
+    private class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHolder> {
+
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+            private TextView tvId, tvSub1, tvSub2, tvAvg;
+
+            public ViewHolder(@NonNull View itemView) {
+                super(itemView);
+                tvId = itemView.findViewById(R.id.textView_Id);
+                //tvSub1 = itemView.findViewById(R.id.textView_sub1);
+                //tvSub2 = itemView.findViewById(R.id.textView_sub2);
+                //tvAvg = itemView.findViewById(R.id.textView_avg);
+            }
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.book_recycle_item, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            /*String avgS = arrayList.get(position).get("Avg");
+            if (avgS.contains("isSiteLocalAddress, ")) {
+                holder.tvId.setBackgroundColor(getColor(R.color.red_ip));
+            } else if (avgS.contains("-, -, -, -, -, -, -, -, -, -, ")) {
+                holder.tvId.setBackgroundColor(getColor(R.color.blank_ip));
+            } else {
+                holder.tvId.setBackgroundColor(getColor(R.color.other_ip));
+            }*/
+
+            holder.tvId.setText(bookarrayList.get(position).get("Id"));
+            //holder.tvSub1.setText(arrayList.get(position).get("Sub1"));
+            //holder.tvSub2.setText(arrayList.get(position).get("Sub2"));
+            //holder.tvAvg.setText(arrayList.get(position).get("Avg"));
+        }
+
+        @Override
+        public int getItemCount() {
+            return bookarrayList.size();
+        }
+    }
 }
 
