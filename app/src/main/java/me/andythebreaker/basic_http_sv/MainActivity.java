@@ -2,11 +2,13 @@ package me.andythebreaker.basic_http_sv;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import BookPage.Bookpage;
 import WebServer.MyWebServer;
 
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
@@ -103,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
     //////////////////////
     RecyclerView bookrv;
     BookListAdapter obj_BookListAdapter;
-    ArrayList<HashMap<String, String>> bookarrayList = new ArrayList<>();
+    //ArrayList<HashMap<String, String>> bookarrayList = new ArrayList<>();
+    ArrayList<HashMap<String, String>> bookarrayList = Bookpage.book_page_aryList;
     Preview.Builder previewBuilder_wf = new Preview.Builder();
     Switch switch_if_af;
     int define_if_able_auto_focus = 1;
@@ -616,7 +619,7 @@ public class MainActivity extends AppCompatActivity {
 
             if(imgFile.exists()){
                 Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                holder.iv_book_page_imageView.setImageBitmap(myBitmap);
+                holder.iv_book_page_imageView.setImageBitmap(RotateBitmap(myBitmap,90));
             }else{
                 toast_is_good_to_eat("there is a major error, can't show your photo!!");
             }
@@ -626,6 +629,13 @@ public class MainActivity extends AppCompatActivity {
         public int getItemCount() {
             return bookarrayList.size();
         }
+    }
+
+    public static Bitmap RotateBitmap(Bitmap source, float angle)
+    {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 }
 

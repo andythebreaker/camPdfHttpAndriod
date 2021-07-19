@@ -1,4 +1,7 @@
 package WebServer;
+
+import BookPage.Bookpage;
+
 import android.content.Context;
 
 import java.io.BufferedReader;
@@ -38,6 +41,9 @@ public class MyWebServer extends NanoHTTPD {
         if (uri.equals("/"))
             filename = "index.html";
         //vendorsMainChunkTooLarge
+        if (uri.equals("/book_list")){
+            return newFixedLengthResponse(Response.Status.OK, "text/html", Bookpage.book_page_aryList_2str());
+        }
 
         String mimetype = "text/html";
         if (filename.contains(".html") || filename.contains(".htm")) {
