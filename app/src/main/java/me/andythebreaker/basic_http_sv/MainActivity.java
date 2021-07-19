@@ -1,9 +1,11 @@
 package me.andythebreaker.basic_http_sv;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import WebServer.MyWebServer;
 
+
+import WebServer.MyWebServer;
 import android.annotation.SuppressLint;
 import android.hardware.camera2.CameraCharacteristics;
 import android.os.Bundle;
@@ -14,12 +16,19 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.*;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.io.File;
+
 
 import androidx.annotation.NonNull;
 import androidx.camera.camera2.interop.Camera2CameraInfo;
@@ -60,6 +69,11 @@ public class MainActivity extends AppCompatActivity {
 
     private String hostip; //本機IP
     private MyWebServer mywebserver;
+    private int REQUEST_CODE_PERMISSIONS = 1001;
+    private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA", "android.permission.WRITE_EXTERNAL_STORAGE"};
+    PreviewView mPreviewView;
+    ImageView captureImage;
+
 
     private Executor executor = Executors.newSingleThreadExecutor();
     private int REQUEST_CODE_PERMISSIONS = 1001;
@@ -75,7 +89,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         //getActionBar().hide();
+
         //hostip = getLocalIpAddress();
         String tmp = "";
         try {
@@ -102,7 +118,9 @@ public class MainActivity extends AppCompatActivity {
             Log.e("WifiPreference IpAddress", ex.toString());
         }
 
+
         tt = (TextView) findViewById(R.id.t1);
+
         tt.setText(tmp);
         t3 = (TextView) findViewById(R.id.t3);
         t3.setText("..........");
@@ -118,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
             Toast toast = Toast.makeText(this, "onResume->WebServer start failed..." + e.getMessage(), Toast.LENGTH_SHORT);
             toast.show();
         }
+
 
         mPreviewView = findViewById(R.id.camera_previewView);
         captureImage = findViewById(R.id.captureImg);
@@ -149,8 +168,21 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (allPermissionsGranted()) {
+                startCamera();
+            } else {
+                Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
+                this.finish();
+            }
+        }
+    }
 
     @Override
     public void onResume() {
@@ -232,10 +264,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     ///////////////////////////////////////////////////////////////////////////////////
+
     private void startCamera() {
 
         final ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+
 
         cameraProviderFuture.addListener(() -> {
             try {
@@ -250,6 +285,7 @@ public class MainActivity extends AppCompatActivity {
         }, ContextCompat.getMainExecutor(this));
     }
 
+
     void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
 
         Preview preview = new Preview.Builder()
@@ -263,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         ImageCapture.Builder builder = new ImageCapture.Builder();
+
 
         final ImageCapture imageCapture = builder
                 .setTargetRotation(this.getWindowManager().getDefaultDisplay().getRotation())
@@ -332,6 +369,8 @@ public class MainActivity extends AppCompatActivity {
                 this.finish();
             }
         }
+
     }
 
 }
+

@@ -85,25 +85,27 @@
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="116dp"
-        android:layout_marginTop="149dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="68dp"
         android:onClick="checkIpClick"
         android:text="Button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="133dp"
-        android:layout_marginTop="57dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="16dp"
         android:onClick="buttonOnClick"
         android:text="Button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+
         android:id="@+id/aaaaaaaaaaaaaaaa"
         android:layout_width="73dp"
         android:layout_height="wrap_content"
@@ -113,5 +115,6 @@
         android:text="sssssssssssssssssssssss"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
