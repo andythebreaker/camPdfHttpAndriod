@@ -12,10 +12,12 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,15 +32,22 @@ import androidx.annotation.NonNull;
 import androidx.camera.camera2.interop.Camera2CameraInfo;
 import androidx.camera.camera2.interop.Camera2Interop;
 import androidx.camera.core.Camera;
+import androidx.camera.core.CameraControl;
+import androidx.camera.core.CameraInfoUnavailableException;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.CameraX;
 import androidx.camera.core.ExtendableBuilder;
+import androidx.camera.core.FocusMeteringAction;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.MeteringPoint;
+import androidx.camera.core.MeteringPointFactory;
 import androidx.camera.core.Preview;
 import androidx.camera.extensions.ExtensionsManager;
 import androidx.camera.extensions.HdrImageCaptureExtender;
 import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.CameraController;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -69,6 +78,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.jetbrains.annotations.Nullable;
 
 import static androidx.camera.extensions.ExtensionMode.HDR;
+import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -86,7 +96,10 @@ public class MainActivity extends AppCompatActivity {
     TextView aaaaaaaaaaaaaaaa;
     RecyclerView mRecyclerView;
     MyListAdapter myListAdapter;
-    ArrayList<HashMap<String,String>> arrayList = new ArrayList<>();
+    ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
+    Preview.Builder previewBuilder_wf = new Preview.Builder();
+    Switch switch_if_af;
+    int define_if_able_auto_focus = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,12 +116,12 @@ public class MainActivity extends AppCompatActivity {
                         .getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
                     InetAddress inetAddress = enumIpAddr.nextElement();
 
-                    HashMap<String,String> hashMap = new HashMap<>();
-                    hashMap.put("Id",inetAddress.getHostAddress());
+                    HashMap<String, String> hashMap = new HashMap<>();
+                    hashMap.put("Id", inetAddress.getHostAddress());
                     //hashMap.put("Sub1",String.valueOf(new Random().nextInt(80) + 20));
                     //hashMap.put("Sub2",String.valueOf(new Random().nextInt(80) + 20));
 
-                    String tmp_ip_stat=(inetAddress.isAnyLocalAddress() ? "isAnyLocalAddress, " : "-, ") +
+                    String tmp_ip_stat = (inetAddress.isAnyLocalAddress() ? "isAnyLocalAddress, " : "-, ") +
                             (inetAddress.isLinkLocalAddress() ? "isLinkLocalAddress, " : "-, ") +
                             (inetAddress.isLoopbackAddress() ? "isLoopbackAddress, " : "-, ") +
                             (inetAddress.isMCGlobal() ? "isMCGlobal, " : "-, ") +
@@ -119,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                             (inetAddress.isMulticastAddress() ? "isMulticastAddress, " : "-, ") +
                             (inetAddress.isSiteLocalAddress() ? "isSiteLocalAddress, " : "-, ");
 
-                    hashMap.put("Avg",tmp_ip_stat);
+                    hashMap.put("Avg", tmp_ip_stat);
 
                     arrayList.add(hashMap);
 
@@ -161,7 +174,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 aaaaaaaaaaaaaaaa.setText("目前拖移植：" + progress + "  /  最大值：" + sk.getMax());
-
+                if (define_if_able_auto_focus == 0) {
+                    setFocusDistance(previewBuilder_wf, progress / 10);
+                }
             }
 
             @Override
@@ -196,6 +211,8 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         myListAdapter = new MyListAdapter();
         mRecyclerView.setAdapter(myListAdapter);
+
+        switch_if_af = (Switch) findViewById(R.id.switch1);
     }
 
     @Override
@@ -272,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void bton_sv_hand_startOnClick(View v){
+    public void bton_sv_hand_startOnClick(View v) {
         Toast toast2 = Toast.makeText(this, "hand start sv", Toast.LENGTH_SHORT);
         toast2.show();
         try {
@@ -281,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
             toast.show();
         } catch (IOException e) {
             e.printStackTrace();
-            Toast toast = Toast.makeText(this, "onResume->WebServer start failed..."+ e.getMessage(), Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(this, "onResume->WebServer start failed..." + e.getMessage(), Toast.LENGTH_SHORT);
             toast.show();
         }
     }
@@ -302,15 +319,30 @@ public class MainActivity extends AppCompatActivity {
                 // This should never be reached.
             }
         }, ContextCompat.getMainExecutor(this));
+
     }
 
     void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
-        float focusDistance = 0F; // example: infinite focus
-        Preview.Builder previewBuilder_wf = new Preview.Builder();
-        setFocusDistance(previewBuilder_wf, focusDistance);
-        Preview preview = previewBuilder_wf.build();
+
+        Preview preview;
         /*Preview preview = new Preview.Builder()
                 .build();*/
+
+        /*if(switch_if_af.isChecked()){
+
+        }else{
+
+        }*/
+
+        if (define_if_able_auto_focus == 0) {
+            float focusDistance = 0F; // example: infinite focus
+            //Preview.Builder previewBuilder_wf = new Preview.Builder();
+            setFocusDistance(previewBuilder_wf, focusDistance);
+            preview = previewBuilder_wf.build();
+        } else {
+            preview = new Preview.Builder()
+                    .build();
+        }
 
         CameraSelector cameraSelector = new CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
@@ -335,7 +367,23 @@ public class MainActivity extends AppCompatActivity {
                 .get(CameraCharacteristics.LENS_INFO_MINIMUM_FOCUS_DISTANCE);
         Log.i("dev", "\t\t\t----------------------------\n\n\n----------------------------------------\t\t\tfound it! " + discoveredMinFocusDistance);
         t3.setText(String.valueOf(discoveredMinFocusDistance));
+
+        //af.ontouch
+
+        //original
         captureImage.setOnClickListener(v -> {
+
+            /*val cameraControl = CameraX.getCameraControl(CameraX.LensFacing.BACK) // you can set it to front
+            val factory = TextureViewMeteringPointFactory(textureView)
+            val point = factory.createPoint(event.x, event.y)
+            val action = FocusMeteringAction.Builder.from(point).build()
+            cameraControl.startFocusAndMetering(action)*/
+
+            /*CameraControl my_cam_ctrl=camera.getCameraControl();
+            new MeteringPointFactory();
+            FocusMeteringAction.Builder myFocusMeteringAction_Builder=FocusMeteringAction.Builder();
+            my_cam_ctrl.startFocusAndMetering(FocusMeteringAction.FLAG_AF);*/
+
 
             SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
             File file = new File(getBatchDirectoryName(), mDateFormat.format(new Date()) + ".jpg");
@@ -352,6 +400,28 @@ public class MainActivity extends AppCompatActivity {
                     error.printStackTrace();
                 }
             });
+        });
+        /*previewView.setOnTouchListener { _, event ->
+                scaleGestureDetector.onTouchEvent(event)
+            return@setOnTouchListener true
+        }*/
+//呼叫一個新的class
+
+        mPreviewView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        return focus(v, event, camera);
+                    //break;
+                    default:
+                        // Unhandled event.
+                        return false;
+                }
+                return true;
+            }
         });
     }
 
@@ -392,25 +462,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder>{
+    private class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder> {
 
 
-        class ViewHolder extends RecyclerView.ViewHolder{
-            private TextView tvId,tvSub1,tvSub2,tvAvg;
+        class ViewHolder extends RecyclerView.ViewHolder {
+            private TextView tvId, tvSub1, tvSub2, tvAvg;
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 tvId = itemView.findViewById(R.id.textView_Id);
                 //tvSub1 = itemView.findViewById(R.id.textView_sub1);
                 //tvSub2 = itemView.findViewById(R.id.textView_sub2);
-                tvAvg  = itemView.findViewById(R.id.textView_avg);
+                tvAvg = itemView.findViewById(R.id.textView_avg);
             }
         }
+
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.recycle_item,parent,false);
+                    .inflate(R.layout.recycle_item, parent, false);
             return new ViewHolder(view);
         }
 
@@ -426,12 +497,12 @@ public class MainActivity extends AppCompatActivity {
             }else {
                 holder.tvId.setBackgroundColor(getColor(R.color.red_GINSYU));
             }*/
-                    String avgS =arrayList.get(position).get("Avg");
-            if(avgS.contains("isSiteLocalAddress, ")){
+            String avgS = arrayList.get(position).get("Avg");
+            if (avgS.contains("isSiteLocalAddress, ")) {
                 holder.tvId.setBackgroundColor(getColor(R.color.red_ip));
-            }else if(avgS.contains("-, -, -, -, -, -, -, -, -, -, ")){
+            } else if (avgS.contains("-, -, -, -, -, -, -, -, -, -, ")) {
                 holder.tvId.setBackgroundColor(getColor(R.color.blank_ip));
-            }else{
+            } else {
                 holder.tvId.setBackgroundColor(getColor(R.color.other_ip));
             }
 
@@ -451,6 +522,31 @@ public class MainActivity extends AppCompatActivity {
         Camera2Interop.Extender extender = new Camera2Interop.Extender(builder);
         extender.setCaptureRequestOption(CaptureRequest.CONTROL_AF_MODE, CameraMetadata.CONTROL_AF_MODE_OFF);
         extender.setCaptureRequestOption(CaptureRequest.LENS_FOCUS_DISTANCE, distance);
+    }
+
+
+    private boolean focus(View v, MotionEvent event, Camera camcrtl) {
+        final float x = (event != null) ? event.getX() : v.getX() + v.getWidth() / 2f;
+        final float y = (event != null) ? event.getY() : v.getY() + v.getHeight() / 2f;
+
+        MeteringPointFactory pointFactory = mPreviewView.getMeteringPointFactory();
+        float afPointWidth = 1.0f / 6.0f;  // 1/6 total area
+        float aePointWidth = afPointWidth * 1.5f;
+        MeteringPoint afPoint = pointFactory.createPoint(x, y/*, afPointWidth, 1.0f*/);
+        MeteringPoint aePoint = pointFactory.createPoint(x, y/*, aePointWidth, 1.0f*/);
+
+        // try {
+        FocusMeteringAction wtfijustwanttofuckingfocusashit;
+        //camcrtl.getCameraControl().startFocusAndMetering(
+        //  FocusMeteringAction.Builder ijustwanttofuckingfocusashit=new FocusMeteringAction.Builder(afPoint);
+        //FocusMeteringAction wtfijustwanttofuckingfocusashit=ijustwanttofuckingfocusashit.build();
+        wtfijustwanttofuckingfocusashit = new FocusMeteringAction.Builder(afPoint).build();
+        camcrtl.getCameraControl().startFocusAndMetering(wtfijustwanttofuckingfocusashit);
+        // } catch (CameraInfoUnavailableException e) {
+        //   Log.d(TAG, "cannot access camera", e);
+        // }
+
+        return true;
     }
 
 }
