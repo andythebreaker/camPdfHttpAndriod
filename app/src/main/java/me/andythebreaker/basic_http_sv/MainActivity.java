@@ -221,6 +221,19 @@ public class MainActivity extends AppCompatActivity {
         }*/
     }
 
+    @Override
+    public void onDestroy() {
+
+        if (mywebserver != null) {
+            mywebserver.closeAllConnections();
+            mywebserver = null;
+            Toast toast2 = Toast.makeText(this, "onPause->app pause, so web server close...", Toast.LENGTH_SHORT);
+            toast2.show();
+        }
+        super.onDestroy();
+
+    }
+
     //獲取本地IP
     @Nullable
     @SuppressLint("LongLogTag")
