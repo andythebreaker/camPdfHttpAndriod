@@ -353,8 +353,10 @@ public class MainActivity extends AppCompatActivity {
 
         ImageCapture.Builder builder = new ImageCapture.Builder();
 
+        //TODO:72dpi->96dpi
         final ImageCapture imageCapture = builder
                 .setTargetRotation(this.getWindowManager().getDefaultDisplay().getRotation())
+                //.setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
                 .build();
 
         preview.setSurfaceProvider(mPreviewView.getSurfaceProvider());
@@ -383,7 +385,7 @@ public class MainActivity extends AppCompatActivity {
             new MeteringPointFactory();
             FocusMeteringAction.Builder myFocusMeteringAction_Builder=FocusMeteringAction.Builder();
             my_cam_ctrl.startFocusAndMetering(FocusMeteringAction.FLAG_AF);*/
-
+            focus(mPreviewView, null, camera);
 
             SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
             File file = new File(getBatchDirectoryName(), mDateFormat.format(new Date()) + ".jpg");
@@ -528,7 +530,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean focus(View v, MotionEvent event, Camera camcrtl) {
         final float x = (event != null) ? event.getX() : v.getX() + v.getWidth() / 2f;
         final float y = (event != null) ? event.getY() : v.getY() + v.getHeight() / 2f;
-
+        toast_is_good_to_eat("x="+String.valueOf(x)+";y="+String.valueOf(y));
         MeteringPointFactory pointFactory = mPreviewView.getMeteringPointFactory();
         float afPointWidth = 1.0f / 6.0f;  // 1/6 total area
         float aePointWidth = afPointWidth * 1.5f;
@@ -537,16 +539,15 @@ public class MainActivity extends AppCompatActivity {
 
         // try {
         FocusMeteringAction wtfijustwanttofuckingfocusashit;
-        //camcrtl.getCameraControl().startFocusAndMetering(
-        //  FocusMeteringAction.Builder ijustwanttofuckingfocusashit=new FocusMeteringAction.Builder(afPoint);
-        //FocusMeteringAction wtfijustwanttofuckingfocusashit=ijustwanttofuckingfocusashit.build();
         wtfijustwanttofuckingfocusashit = new FocusMeteringAction.Builder(afPoint).build();
         camcrtl.getCameraControl().startFocusAndMetering(wtfijustwanttofuckingfocusashit);
-        // } catch (CameraInfoUnavailableException e) {
-        //   Log.d(TAG, "cannot access camera", e);
-        // }
 
         return true;
+    }
+
+    public void toast_is_good_to_eat(String msg_to_toast_out) {
+        Toast toast3 = Toast.makeText(this, msg_to_toast_out, Toast.LENGTH_SHORT);
+        toast3.show();
     }
 
 }
