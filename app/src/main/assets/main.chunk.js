@@ -282,22 +282,20 @@
                   imgprev.src = my_success;
                   var thisimgid=imgs_ary_objelement.replace('.','');
                   imgprev.id=thisimgid;
-
+//imgprev.classList.add("rotate90");
                   imgprev.onload = function () {
-                    var w = imgprev.width;
-                    var h = imgprev.height;
-                    console.log("NEW IMAGE width", w);
-                    console.log("NEW IMAGE height: ", h);
-                    doc.addPage();
-                    console.log("~~~~~~~~~~~~~~");
-                    const imageDimensions = imageDimensionsOnA4({
-                                            width: w,
-                                            height: h
-                                          });
-console.log(`a:${(A4_PAPER_DIMENSIONS.width - imageDimensions.width) / 2}b:${(A4_PAPER_DIMENSIONS.height - imageDimensions.height) / 2}c:${imageDimensions.width}d:${imageDimensions.height}`);
-                    doc.addImage(/*my_success*/document.getElementById("tmpimgwh"), "jpeg"/*image.imageType*/, // Images are vertically and horizontally centered on the page.
-                      (A4_PAPER_DIMENSIONS.width - imageDimensions.width) / 2, (A4_PAPER_DIMENSIONS.height - imageDimensions.height) / 2, imageDimensions.width, imageDimensions.height);
-                      int_img_pre_pors_fin=int_img_pre_pors_fin+1;
+
+                   var w = imgprev.width;
+                                      var h = imgprev.height;
+                                      var divw = document.createElement('div');
+                                      divw.innerText=w;
+                                      divw.id=thisimgid+'w';
+                                      var divh = document.createElement('div');
+                                                                            divh.innerText=h;
+                                                                            divh.id=thisimgid+'h';
+  document.getElementById("tmpimgwh").appendChild(divw);
+    document.getElementById("tmpimgwh").appendChild(divh);
+                                int_img_pre_pors_fin=int_img_pre_pors_fin+1;
                   }
 
                   document.getElementById("tmpimgwh").appendChild(imgprev);
@@ -305,12 +303,28 @@ console.log(`a:${(A4_PAPER_DIMENSIONS.width - imageDimensions.width) / 2}b:${(A4
             }function checkFlag() {
                  if (int_img_pre_pors_fin<imgs_ary_obj.length) {
                      setTimeout(() => {
+                     document.getElementById('loading_rrr').style.display = "flex";
                          checkFlag();
                          console.log(".");
                      }, 5);
                  } else {
+                 document.getElementById('loading_rrr').style.display = "none";
+                 for (let imgs_ary_objindex = 0; imgs_ary_objindex < imgs_ary_obj.length; imgs_ary_objindex++) {
+                               const imgs_ary_objelement = imgs_ary_obj[imgs_ary_objindex];
+                               var thisimgid=imgs_ary_objelement.replace('.','');
+                               var elef=document.getElementById(thisimgid);
+                               doc.addPage();
+                               const imageDimensions = imageDimensionsOnA4({
+                                                                           width: parseInt(document.getElementById(thisimgid+'w').innerText,10),
+                                                                           height: parseInt(document.getElementById(thisimgid+'h').innerText,10)
+                                                                         });
+console.log(`a:${(A4_PAPER_DIMENSIONS.width - imageDimensions.width) / 2}b:${(A4_PAPER_DIMENSIONS.height - imageDimensions.height) / 2}c:${imageDimensions.width}d:${imageDimensions.height}`);
+       doc.addImage(/*my_success*/elef, "jpeg"/*image.imageType*/, // Images are vertically and horizontally centered on the page.
+                      (A4_PAPER_DIMENSIONS.width - imageDimensions.width) / 2, (A4_PAPER_DIMENSIONS.height - imageDimensions.height) / 2-A4_PAPER_DIMENSIONS.width, imageDimensions.height, imageDimensions.width,thisimgid,'FAST',270);
+
+                               }
                      const pdfURL = doc.output("bloburl");
-                                            window.open(pdfURL, "_blank");
+ window.open(pdfURL, "_blank");
                  }
              }
              checkFlag();
@@ -346,6 +360,7 @@ console.log(`a:${(A4_PAPER_DIMENSIONS.width - imageDimensions.width) / 2}b:${(A4
             });
           }, [setUploadedImages, uploadedImages]);
           const handleGeneratePdfFromImages = react__WEBPACK_IMPORTED_MODULE_0___default.a.useCallback(() => {
+          console.log("handleGeneratePdfFromImages");
             generatePdfFromImages(uploadedImages);
             cleanUpUploadedImages();
           }, [uploadedImages, cleanUpUploadedImages]);
@@ -409,7 +424,7 @@ console.log(`a:${(A4_PAPER_DIMENSIONS.width - imageDimensions.width) / 2}b:${(A4
               }, this), /*#__PURE__*/Object(react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_3__["jsxDEV"])("button", {
                 onClick: handleGeneratePdfFromImages,
                 className: "button",
-                disabled: uploadedImages.length === 0,
+                /*disabled: uploadedImages.length === 0,*/
                 children: "Generate PDF"
               }, void 0, false, {
                 fileName: _jsxFileName,
