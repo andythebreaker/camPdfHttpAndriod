@@ -46,7 +46,7 @@ public class MyWebServer extends NanoHTTPD {
         if (uri.equals("/book_list")){
             return newFixedLengthResponse(Response.Status.OK, "text/html", Bookpage.book_page_aryList_2str());
         }
-        if (uri.equals("/book_list_file_name")){
+        if (uri.equals("/book_list_file_name.json")){
             try {
                 return newFixedLengthResponse(Response.Status.OK, "application/json", Bookpage.book_page_file_name_list());
             } catch (JsonProcessingException e) {
