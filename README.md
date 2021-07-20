@@ -44,6 +44,9 @@ google it:
 
 ## how to use
 
+video:
+https://youtu.be/2RIbOT4zGy8
+
 ### Configure your phone and computer in the local network
 
 Suggested steps
