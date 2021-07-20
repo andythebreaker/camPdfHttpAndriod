@@ -7,9 +7,13 @@ import android.content.Context;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 import fi.iki.elonen.NanoHTTPD;
@@ -53,6 +57,18 @@ public class MyWebServer extends NanoHTTPD {
                 e.printStackTrace();
             }
         }
+        if (uri.contains("/bookpage")){
+            InputStream isr2;
+            try {
+                Path pathjpg = Paths.get(uri);
+                File initialFilejpg = new File(Bookpage.getBatchDirectoryName()+"/"+pathjpg.getFileName());
+                isr2 = new FileInputStream(initialFilejpg);
+                return newFixedLengthResponse(Response.Status.OK, "image/jpeg", isr2, isr2.available());
+            } catch (IOException e) {
+                e.printStackTrace();
+                return newFixedLengthResponse(Response.Status.OK, "image/jpeg", "");
+            }
+        }
 
         String mimetype = "text/html";
         if (filename.contains(".html") || filename.contains(".htm")) {
@@ -68,7 +84,7 @@ public class MyWebServer extends NanoHTTPD {
             mimetype = "text/gif";
             is_ascii = false;
         } else if (filename.contains(".jpeg") || filename.contains(".jpg")) {
-            mimetype = "text/jpeg";
+            mimetype = "image/jpeg";
             is_ascii = false;
         } else if (filename.contains(".png")) {
             mimetype = "image/png";
