@@ -345,6 +345,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private Camera camera=null;
+
     void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
 
         Preview preview;
@@ -377,8 +379,8 @@ public class MainActivity extends AppCompatActivity {
 
         preview.setSurfaceProvider(mPreviewView.getSurfaceProvider());
 
-        Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview, imageAnalysis, imageCapture);
-
+        /*Camera */camera = cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview, imageAnalysis, imageCapture);
+        camera.getCameraControl().enableTorch(true);
         @SuppressLint({"RestrictedApi", "UnsafeOptInUsageError"}) CameraCharacteristics camChars = Camera2CameraInfo
                 .extractCameraCharacteristics(camera.getCameraInfo());
         float discoveredMinFocusDistance = camChars
@@ -473,6 +475,17 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
                 this.finish();
             }
+        }
+    }
+
+    public void flashsw(View view) {
+        Button buttontmp = (Button) findViewById(R.id.flashLightBTON);
+        if(buttontmp.getText()== "lightON"){
+            buttontmp.setText("lightOFF");
+            camera.getCameraControl().enableTorch(true);
+        }else{
+            buttontmp.setText("lightON");
+            camera.getCameraControl().enableTorch(false);
         }
     }
 
