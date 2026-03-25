@@ -4,9 +4,9 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
     defaultConfig {
-        applicationId "me.andythebreaker.basic_http_sv"
+        applicationId "me.andythebreaker.float_cam_srv"
         minSdkVersion 26
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -35,7 +35,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation "androidx.camera:camera-camera2:1.1.0-alpha06"
     implementation "androidx.camera:camera-lifecycle:1.1.0-alpha06"
-    implementation"androidx.camera:camera-view:1.0.0-alpha26"
+    implementation "androidx.camera:camera-view:1.0.0-alpha26"
     implementation "androidx.camera:camera-extensions:1.0.0-alpha26"
 
 }

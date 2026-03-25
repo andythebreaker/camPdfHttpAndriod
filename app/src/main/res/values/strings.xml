@@ -1,5 +1,30 @@
 <resources>
-    <string name="app_name">basic_http_sv</string>
-    <string name="capture">capture</string>
-    <string name="preview_area">preview_area</string>
+    <string name="app_name">float_cam_srv</string>
+    <string name="capture">Capture</string>
+    <string name="preview_area">Camera preview</string>
+    <string name="float_mode">Float mode</string>
+    <string name="preview_scale">Preview scale</string>
+    <string name="status_initializing">Initializing camera…</string>
+    <string name="status_camera_error">Camera failed to start</string>
+    <string name="status_ready">Ready • Capture %1$d x %2$d</string>
+    <string name="status_saved">Saved %1$s • Capture %2$d x %3$d</string>
+    <string name="status_recording">Recording float-mode video…</string>
+    <string name="status_segment_saved">Saved segment %1$s</string>
+    <string name="permissions_denied">Camera permissions not granted.</string>
+    <string name="web_server_started">Web server started</string>
+    <string name="web_server_failed">Web server failed: %1$s</string>
+    <string name="focus_unknown">unknown</string>
+    <string name="focus_pending">pending</string>
+    <string name="info_template">IP %1$s • Focus %2$s • Preview %3$.2fx</string>
+    <string name="image_saved">Saved: %1$s</string>
+    <string name="capture_failed">Capture failed: %1$s</string>
+    <string name="recording_failed">Recording failed: %1$s</string>
+    <string name="recording_stopped">Recording stopped</string>
+    <string name="camera_not_ready">Camera not ready yet.</string>
+    <string name="pip_not_supported">Floating mode requires Android 8.0 or newer.</string>
+    <string name="notification_channel_name">Float recording</string>
+    <string name="notification_channel_description">Float-mode video recording controls</string>
+    <string name="notification_recording_title">float_cam_srv recording</string>
+    <string name="notification_recording_text">Saving 1-minute MP4 segments</string>
+    <string name="stop_recording">Stop</string>
 </resources>
